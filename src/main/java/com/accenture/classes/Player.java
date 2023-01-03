@@ -1,7 +1,9 @@
 package com.accenture.classes;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import java.util.Random;
@@ -21,16 +23,22 @@ public class Player {
 			"Merritt", "Mckenzie", "Banks", "Webster", "Cantu", "Hamilton", "Zavala", "Boone",
 			"Davila", "English", "Eaton", "Ortega", "Willis", "Briggs", "Chavez", "Potter", "Wiley"};
 	
+	Environment environment;
 	private Random rand;
+
 	private String name;
 	private int guess;
-
-	public Player(Random random) {
+	
+	@Autowired
+	public Player(Random random, Environment environment) {
 		this.rand = random;
+		this.environment = environment;
 		//generate random name
-		name = firstNameList[rand.nextInt(30)] + " " + lastNameList[rand.nextInt(30)];
+		name = firstNameList[rand.nextInt(firstNameList.length)] + " " + lastNameList[rand.nextInt(lastNameList.length)];
 		//generate guess as a random number
-		guess = rand.nextInt(10);	
+		final int MINGUESS = Integer.parseInt(environment.getProperty("minguess"));
+		final int MAXGUESS = Integer.parseInt(environment.getProperty("maxguess"));
+		guess = rand.nextInt(MINGUESS, MAXGUESS+1);	
 	}
 
 	public String getName() {
